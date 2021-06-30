@@ -7,16 +7,21 @@ That's how I configure my remote development environment(s).
 Let's first create resource group called `pk-group-dev-01` within the `westeurope` region:
 
 ```text
-$ az group create --name pk-group-dev-01 --location westeurope
+$ GROUP=pk-group-dev-01
+$ echo $GROUP
+$ az group create --name $GROUP --location westeurope
 ...
 ```
 
 Then, let's create an Ubuntu virtual machine called `pk-vm-dev-01` within the `pk-group-dev-01` group:
 
 ```text
+$ VM=pk-vm-dev-01
+$ echo VM
+pk-vm-dev-01
 $ az vm create \
-  --resource-group pk-group-dev-01 \
-  --name pk-vm-dev-01 \
+  --resource-group $GROUP \
+  --name $VM \
   --image UbuntuLTS \
   --admin-username radicel \
   --generate-ssh-keys
@@ -27,10 +32,10 @@ $ az vm create \
 }
 ```
 
-or, you can retrieve the IP address later with:
+or, you can retrieve the public IP address later with:
 
 ```text
-$ az vm show --show-details --name pk-vm-dev-01 --resource-group pk-group-dev-01
+$ az vm show --show-details --name $VM --resource-group $GROUP
 {
   ...
   "publicIps": <Public IP adrress>
@@ -38,10 +43,18 @@ $ az vm show --show-details --name pk-vm-dev-01 --resource-group pk-group-dev-01
 }
 ```
 
+Let's save this public IP address into a variable:
+
+```text
+$ PUBLIC_IP=$(az vm show --show-details --name $VM --resource-group $GROUP | jq '.publicIps' -r)
+$ echo $PUBLIC_IP
+<Public IP adrress>
+```
+
 Then, connect to the machine
 
 ```text
-$ ssh radicel@<Public IP adrress>
+$ ssh radicel@$PUBLIC_IP
 ...
 radicel@pk-vm-dev-01:~$
 ```
@@ -114,7 +127,7 @@ radicel@pk-vm-dev-01:~$
 Generating a new SSH key:
 
 ```text
-ssh-keygen -t ed25519 -C "your_email@example.com"
+$ ssh-keygen -t ed25519 -C "your_email@example.com"
 ...
 ```
 
